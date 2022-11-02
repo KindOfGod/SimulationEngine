@@ -1,9 +1,9 @@
-namespace SimulationEngine.src.PandemicEngine
+namespace SimulationEngine.PandemicEngine
 {
     /// <summary>
-    /// People Attributes are represented in a 32bit field.
+    /// All states are saved in 
     /// </summary>
-
+    
     // Bit 
     public enum StateOfLife
     {

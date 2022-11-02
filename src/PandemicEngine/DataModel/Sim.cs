@@ -1,4 +1,4 @@
-namespace SimulationEngine.src.PandemicEngine.DataModel
+namespace SimulationEngine.PandemicEngine.DataModel
 {
     public class Sim
     {

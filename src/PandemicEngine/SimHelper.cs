@@ -1,4 +1,4 @@
-namespace SimulationEngine.src.PandemicEngine
+namespace SimulationEngine.PandemicEngine
 {
     public static class SimHelper
     {

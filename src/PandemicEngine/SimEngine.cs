@@ -1,6 +1,6 @@
-using SimulationEngine.src.PandemicEngine.DataModel;
+using SimulationEngine.PandemicEngine.DataModel;
 
-namespace SimulationEngine.src.PandemicEngine
+namespace SimulationEngine.PandemicEngine
 {
     public static class SimEngine
     {

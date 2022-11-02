@@ -1,12 +1,8 @@
-﻿using System;
-using SimulationEngine.src.Logging;
-using SimulationEngine.src.Logging.Logger;
-
-namespace MyApp
+﻿namespace SimulationEngine
 {
-    internal class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             /*uint store = 0xFFFF_FFFF;
             Console.WriteLine(Convert.ToString(store, 2));
