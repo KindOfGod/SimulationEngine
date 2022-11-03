@@ -43,16 +43,16 @@ namespace SimulationEngine.PandemicEngine.DataModel
             
             //Health
             
-            if (InitialProportionOfInfectedChildren is not (>= 0 or <= 1))
+            if (InitialProportionOfInfectedChildren is not (>= 0 and <= 1))
                 errors.Add("InitialProportionOfInfectedChildren is not (>= 0 or <= 1)");
-            if (InitialProportionOfInfectedYoungAdults is not (>= 0 or <= 1))
+            if (InitialProportionOfInfectedYoungAdults is not (>= 0 and <= 1))
                 errors.Add("InitialProportionOfInfectedYoungAdults is not (>= 0 or <= 1)");
-            if (InitialProportionOfInfectedAdults is not (>= 0 or <= 1))
+            if (InitialProportionOfInfectedAdults is not (>= 0 and <= 1))
                 errors.Add("InitialProportionOfInfectedAdults is not (>= 0 or <= 1)");
-            if (InitialProportionOfInfectedPensioner is not (>= 0 or <= 1))
+            if (InitialProportionOfInfectedPensioner is not (>= 0 and <= 1))
                 errors.Add("InitialProportionOfInfectedPensioner is not (>= 0 or <= 1)");
             
-            if(HealthIllnessSeverity == StateOfLife.Dead || HealthIllnessSeverity == StateOfLife.Healthy)
+            if(HealthIllnessSeverity is StateOfLife.Dead or StateOfLife.Healthy)
                 errors.Add("HealthIllnessSeverity can't be Dead or Healthy");
             
             //Age
