@@ -22,6 +22,6 @@ namespace SimulationEngine.PandemicEngine
         Child = 0 << 3,
         YoungAdult = 1 << 3,
         Adult = 2 << 3,
-        Old = 3 << 3
+        Pensioner = 3 << 3
     }
 }

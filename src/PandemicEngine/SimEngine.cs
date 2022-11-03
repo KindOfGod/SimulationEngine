@@ -2,15 +2,17 @@ using SimulationEngine.PandemicEngine.DataModel;
 
 namespace SimulationEngine.PandemicEngine
 {
-    public static class SimEngine
+    public static partial class SimEngine
     {
-        #region Pubic Methods
-
-        public static Sim CreateSim(SimSettings settings)
+        
+        public static Sim CreateNewSim(SimSettings settings)
         {
-            return new Sim();
+            return new Sim(settings, new List<SimState>{GenerateInitialSimState(settings)});
         }
-
-        #endregion
+        
+        public static Sim LoadSim(SimSettings settings, List<SimState> simStates)
+        {
+            return new Sim(settings, simStates);
+        }
     }
 }
