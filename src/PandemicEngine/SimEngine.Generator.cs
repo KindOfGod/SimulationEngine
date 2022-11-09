@@ -64,7 +64,6 @@ public static partial class SimEngine
     private static Dictionary<uint, uint> GenerateStateOfLife(StateOfLife sol, uint pop, uint count, SimSettings settings)
     {
         var popIndex = new Dictionary<uint, uint>();
-
         var popState =  pop | (uint)sol;
         
         if (count == 0)

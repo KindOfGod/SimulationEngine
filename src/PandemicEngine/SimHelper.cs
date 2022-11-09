@@ -1,14 +1,13 @@
 namespace SimulationEngine.PandemicEngine
 {
+    /// <summary>
+    /// SimHelper contains Methods to assist the SimEngine.
+    /// </summary>
     public static class SimHelper
     {
-        public static uint AttributesToUnit()
-        {
-            uint store = 0;
-
-            return store;
-        }
-
+        /// <summary>
+        /// Merges two dictionaries with no duplicate key values.
+        /// </summary>
         public static void MergeDictionariesNoDuplicates(Dictionary<uint, uint> destination, Dictionary<uint, uint> source)
         {
             if (source.Count == 0)

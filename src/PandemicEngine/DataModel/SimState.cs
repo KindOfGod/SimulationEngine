@@ -1,5 +1,8 @@
 namespace SimulationEngine.PandemicEngine.DataModel
 {
+    /// <summary>
+    /// Contains information about a single iteration of a simulation.
+    /// </summary>
     public class SimState
     {
         public Dictionary<uint, uint> PopIndex;
