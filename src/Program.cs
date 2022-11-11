@@ -24,9 +24,8 @@ namespace SimulationEngine
                 if (valid != null)
                 {
                     foreach (var str in valid)
-                    {
                         Console.WriteLine(str);
-                    }
+                    
                     return;
                 }
                 Console.ForegroundColor = ConsoleColor.White;
@@ -34,6 +33,8 @@ namespace SimulationEngine
                 using (ConsoleEx.WriteExecutionTime($"Generate Simulation Data (Scope: {settings.Scope})"))
                 {
                     var sim = SimEngine.CreateNewSim(settings);
+                    
+                    SimEngine.IterateSimulation(sim);
                 }
             }
         }

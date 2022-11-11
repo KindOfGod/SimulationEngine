@@ -23,5 +23,32 @@ namespace SimulationEngine.PandemicEngine
         {
             return new Sim(settings, simStates);
         }
+        
+        /// <summary>
+        /// Iterate Simulation to next state
+        /// </summary>
+        public static void IterateSimulation(Sim sim)
+        {
+            using (ConsoleEx.WriteExecutionTime($"Iteration {sim.SimStates.Count})"))
+            {
+                var newState = new SimState(sim.SimSettings.Scope);
+                var newPopIndex = new Dictionary<uint, uint>();
+            
+                foreach (var pop in sim.SimStates[^1].PopIndex)
+                    SimHelper.MergeDictionariesNoDuplicates(newPopIndex, IteratePip(pop.Key, pop.Value));
+
+                sim?.SimStates.Add(newState);
+            }
+        }
+
+        /// <summary>
+        /// Iterates a single Pop and returns Dictionary with resulting Pops
+        /// </summary>
+        private static Dictionary<uint, uint> IteratePip(uint pop, uint count)
+        {
+            var newPopIndex = new Dictionary<uint, uint>();
+
+            return newPopIndex;
+        }
     }
 }

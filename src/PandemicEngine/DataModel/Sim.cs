@@ -5,8 +5,8 @@ namespace SimulationEngine.PandemicEngine.DataModel
     /// </summary>
     public class Sim
     {
-        public SimSettings SimSettings { get; }
-        public List<SimState> SimStates { get; }
+        public SimSettings SimSettings { get; set; }
+        public List<SimState> SimStates { get; set; }
         
         public Sim(SimSettings simSettings, List<SimState> simStates)
         {
