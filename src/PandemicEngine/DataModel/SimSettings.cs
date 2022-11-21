@@ -10,7 +10,7 @@ namespace SimulationEngine.PandemicEngine.DataModel
         
         // General
         public int Scope { get; set; } = 100_000;
-        
+
         // Health Distribution
         public double InitialProportionOfInfected { get; set; } //evenly distributed between age groups
         public StateOfLife HealthIllnessSeverity { get; set; } = StateOfLife.Ill; // can't be Healthy or Dead
@@ -25,34 +25,19 @@ namespace SimulationEngine.PandemicEngine.DataModel
 
         #region Virus Configuration
 
+        //infection rates
+        public double BaseInfectionRate { get; set; } = 0.001; // can't be greater than 1
+        public double EndangeredAgeInfectionRate  { get; set; } = 0.005; //can't be greater than 1
+        public Age? EndangeredAgeGroup { get; set; } = Age.Pensioner;
         
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Returns List of errors as string or null if configuration is valid.
-        /// </summary>
-        public List<string>? IsConfigurationValid()
-        {
-            var errors = new List<string>();
-            
-            //Health
-            if(InitialProportionOfInfected > 1)
-                errors.Add($"{nameof(InitialProportionOfInfected)} can't be > 1");
-
-            if(HealthIllnessSeverity is StateOfLife.Dead or StateOfLife.Healthy)
-                errors.Add($"{HealthIllnessSeverity} can't be Dead or Healthy");
-            
-            //Age
-            
-            if(Math.Abs(AgeProportionOfChildren + AgeProportionOfYoungAdults + AgeProportionOfAdults +
-                   AgeProportionOfPensioner - 1) > 0.01)
-                errors.Add("AgeProportions sum is not 1");
-
-            return errors.Count > 0 ? errors : null;
-        }
+        //infection kind
+        public StateOfLife InfectionSeverity { get; set; } = StateOfLife.Ill;
+        public double RateOfGettingWorse { get; set; } = 0.2; // can't be greater than 1
+        public double EndangeredAgeRateOfGettingWorse  { get; set; } = 0.4; //can't be greater than 1
+        
+        //rate of death
+        public double BaseDeathRate { get; set; } = 0.1; // can't be greater than 1
+        public double EndangeredAgeDeathRate  { get; set; } = 0.2; //can't be greater than 1
 
         #endregion
     }

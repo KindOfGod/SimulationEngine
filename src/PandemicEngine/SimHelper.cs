@@ -5,6 +5,10 @@ namespace SimulationEngine.PandemicEngine
     /// </summary>
     public static class SimHelper
     {
+        //todo: use random seed! static seed only for debug use
+        private const int Seed = 1;
+        private static readonly Random Rnd = new(Seed);
+        
         /// <summary>
         /// Merges two dictionaries with no duplicate key values.
         /// </summary>
@@ -22,9 +26,7 @@ namespace SimulationEngine.PandemicEngine
         /// </summary>
         public static bool DecideWithProbability(double percentage)
         {
-            var rnd = new Random(Guid.NewGuid().GetHashCode());
-            var num = rnd.Next(0, 100);
-
+            var num = Rnd.Next(0, 100);
             return num <= percentage * 100;
         }
         
@@ -33,10 +35,8 @@ namespace SimulationEngine.PandemicEngine
         /// </summary>
         public static double DecidePercentageWithDeviation(uint count, double percentage, double deviation)
         {
-            var rnd = new Random(Guid.NewGuid().GetHashCode());
-            
             var dev = deviation * 100;
-            var resDev = rnd.Next(-(int)dev, (int)dev);
+            var resDev = Rnd.Next(-(int)dev, (int)dev);
 
             return count * ((percentage * 100) + resDev);
         }

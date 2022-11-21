@@ -29,24 +29,41 @@ namespace SimulationEngine.PandemicEngine
         /// </summary>
         public static void IterateSimulation(Sim sim)
         {
-            using (ConsoleEx.WriteExecutionTime($"Iteration {sim.SimStates.Count})"))
-            {
-                var newState = new SimState(sim.SimSettings.Scope);
-                var newPopIndex = new Dictionary<uint, uint>();
-            
-                foreach (var pop in sim.SimStates[^1].PopIndex)
-                    SimHelper.MergeDictionariesNoDuplicates(newPopIndex, IteratePip(pop.Key, pop.Value));
+            var newState = new SimState(sim.SimSettings.Scope);
+            var newPopIndex = new Dictionary<uint, uint>();
 
-                sim?.SimStates.Add(newState);
+            foreach (var pop in sim.SimStates[^1].PopIndex)
+            {
+                //only simulate living people
+                if((pop.Key & (uint) StateOfLife.Dead) == 0)
+                    SimHelper.MergeDictionariesNoDuplicates(newPopIndex, IteratePip(pop.Key, pop.Value, sim.SimSettings));
+                else
+                    newPopIndex.Add(pop.Key, pop.Value);
             }
+            sim?.SimStates.Add(newState);
         }
 
         /// <summary>
         /// Iterates a single Pop and returns Dictionary with resulting Pops
         /// </summary>
-        private static Dictionary<uint, uint> IteratePip(uint pop, uint count)
+        private static Dictionary<uint, uint> IteratePip(uint pop, uint count, SimSettings settings)
         {
             var newPopIndex = new Dictionary<uint, uint>();
+            
+            var isEndangeredAge = false;
+            if(settings.EndangeredAgeGroup != null)
+                isEndangeredAge = (pop & (uint)settings.EndangeredAgeGroup) > 0;
+            
+            //healthy
+            if ((pop & (uint) StateOfLife.Healthy) > 0)
+            {
+                var rateOfWorsening = isEndangeredAge ? settings.EndangeredAgeRateOfGettingWorse : settings.RateOfGettingWorse;
+            }
+            //infected
+            else
+            {
+                var rateOfDead = isEndangeredAge ? settings.EndangeredAgeDeathRate : settings.BaseDeathRate;
+            }
 
             return newPopIndex;
         }
