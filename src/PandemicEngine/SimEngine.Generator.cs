@@ -7,18 +7,27 @@ public static partial class SimEngine
     /// <summary>
     /// Generate a Initial Simulation State with valid SimSettings
     /// </summary>
-
-    //
-    // Generation works in a tree scheme. The bitfields of the PopIndex gets assembled by single attributes. 
-    //
+    
     private static SimState GenerateInitialSimState(SimSettings settings)
     {
-        var popIndex = new Dictionary<uint, uint>();
+        //generate age groups
+        var basePopIndex = new Dictionary<uint, uint>
+        {
+            {(uint) Age.Child, (uint) (settings.Scope * settings.AgeProportionOfChildren)},
+            {(uint) Age.YoungAdult, (uint) (settings.Scope * settings.AgeProportionOfYoungAdults)},
+            {(uint)Age.Adult, (uint)(settings.Scope * settings.AgeProportionOfAdults)},
+            {(uint)Age.Pensioner, (uint)(settings.Scope * settings.AgeProportionOfPensioner)}
+        };
+        
+        //add health state attribute
+        basePopIndex = AddAttributeToAllByPercentage(basePopIndex, settings.InitialProportionOfInfected, (uint)settings.HealthIllnessSeverity);
 
-        SimHelper.MergeDictionariesNoDuplicates(popIndex, GenerateAgeGroup(Age.Child,(uint)(settings.Scope * settings.AgeProportionOfChildren), settings));
-        SimHelper.MergeDictionariesNoDuplicates(popIndex, GenerateAgeGroup(Age.YoungAdult,(uint)(settings.Scope * settings.AgeProportionOfYoungAdults), settings));
-        SimHelper.MergeDictionariesNoDuplicates(popIndex, GenerateAgeGroup(Age.Adult,(uint)(settings.Scope * settings.AgeProportionOfAdults), settings));
-        SimHelper.MergeDictionariesNoDuplicates(popIndex, GenerateAgeGroup(Age.Pensioner,(uint)(settings.Scope * settings.AgeProportionOfPensioner), settings));
+        var popIndex = new Dictionary<uint, uint>();
+        foreach (var (key, count) in basePopIndex)
+        {
+            var k = key; //append new attributes here
+            popIndex.Add(k, count);
+        }
         
         var state = new SimState(settings.Scope)
         {
@@ -28,49 +37,20 @@ public static partial class SimEngine
         return state;
     }
 
-    private static Dictionary<uint, uint> GenerateAgeGroup(Age age, uint count, SimSettings settings)
+    private static Dictionary<uint, uint> AddAttributeToAllByPercentage(Dictionary<uint, uint> popIndex, double percentage, uint attribute)
     {
-        var popIndex = new Dictionary<uint, uint>();
-        var popState = (uint)( 0 | age);
-        
-        if (count == 0)
-            return popIndex;
-        
-        //calculate illCount dependent of AgeGroup
-        var illCount = (uint) 0;
+        var resIndex = new Dictionary<uint, uint>();
 
-        switch (age)
+        foreach (var (pop, popCount) in popIndex)
         {
-            case Age.Child:
-                illCount = (uint)(count * settings.InitialProportionOfInfectedChildren);
-                break;
-            case Age.YoungAdult:
-                illCount = (uint)(count * settings.InitialProportionOfInfectedYoungAdults);
-                break;
-            case Age.Adult:
-                illCount = (uint)(count * settings.InitialProportionOfInfectedAdults);
-                break;
-            case Age.Pensioner:
-                illCount = (uint)(count * settings.InitialProportionOfInfectedPensioner);
-                break;
+            var newAttributeCount = (uint)(popCount * percentage);
+            
+            if(newAttributeCount > 0)
+                resIndex.Add(pop | attribute, newAttributeCount);
+            
+            resIndex.Add(pop, popCount - newAttributeCount);
         }
 
-        SimHelper.MergeDictionariesNoDuplicates(popIndex, GenerateStateOfLife(StateOfLife.Healthy, popState, (count - illCount), settings));
-        SimHelper.MergeDictionariesNoDuplicates(popIndex, GenerateStateOfLife(settings.HealthIllnessSeverity, popState, illCount, settings));
-
-        return popIndex;
-    }
-    
-    private static Dictionary<uint, uint> GenerateStateOfLife(StateOfLife sol, uint pop, uint count, SimSettings settings)
-    {
-        var popIndex = new Dictionary<uint, uint>();
-        var popState =  pop | (uint)sol;
-        
-        if (count == 0)
-            return popIndex;
-        
-        popIndex.Add(popState, count);
-
-        return popIndex;
+        return resIndex;
     }
 }

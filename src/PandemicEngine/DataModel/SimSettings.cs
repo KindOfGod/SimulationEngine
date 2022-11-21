@@ -12,10 +12,7 @@ namespace SimulationEngine.PandemicEngine.DataModel
         public int Scope { get; set; } = 100_000;
         
         // Health Distribution
-        public double InitialProportionOfInfectedChildren { get; set; } = 0; // has to be >= 0 and <= 1
-        public double InitialProportionOfInfectedYoungAdults { get; set; } = 0; // has to be >= 0 and <= 1
-        public double InitialProportionOfInfectedAdults { get; set; } = 0; // has to be >= 0 and <= 1
-        public double InitialProportionOfInfectedPensioner { get; set; } = 0; // has to be >= 0 and <= 1
+        public double InitialProportionOfInfected { get; set; } //evenly distributed between age groups
         public StateOfLife HealthIllnessSeverity { get; set; } = StateOfLife.Ill; // can't be Healthy or Dead
         
         // Age Distribution --> has to be 1 in total
@@ -42,18 +39,11 @@ namespace SimulationEngine.PandemicEngine.DataModel
             var errors = new List<string>();
             
             //Health
-            
-            if (InitialProportionOfInfectedChildren is not (>= 0 and <= 1))
-                errors.Add("InitialProportionOfInfectedChildren is not (>= 0 or <= 1)");
-            if (InitialProportionOfInfectedYoungAdults is not (>= 0 and <= 1))
-                errors.Add("InitialProportionOfInfectedYoungAdults is not (>= 0 or <= 1)");
-            if (InitialProportionOfInfectedAdults is not (>= 0 and <= 1))
-                errors.Add("InitialProportionOfInfectedAdults is not (>= 0 or <= 1)");
-            if (InitialProportionOfInfectedPensioner is not (>= 0 and <= 1))
-                errors.Add("InitialProportionOfInfectedPensioner is not (>= 0 or <= 1)");
-            
+            if(InitialProportionOfInfected > 1)
+                errors.Add($"{nameof(InitialProportionOfInfected)} can't be > 1");
+
             if(HealthIllnessSeverity is StateOfLife.Dead or StateOfLife.Healthy)
-                errors.Add("HealthIllnessSeverity can't be Dead or Healthy");
+                errors.Add($"{HealthIllnessSeverity} can't be Dead or Healthy");
             
             //Age
             
