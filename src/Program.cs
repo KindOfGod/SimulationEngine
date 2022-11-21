@@ -23,7 +23,7 @@ namespace SimulationEngine
                 }
                 
                 //run iterations
-                for (var i = 0; i < 1; i++)
+                for (var i = 0; i < 10; i++)
                 {
                     using (ConsoleEx.WriteExecutionTime($"Iteration [{sim.SimStates.Count}]"))
                     {

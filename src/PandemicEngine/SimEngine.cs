@@ -35,11 +35,14 @@ namespace SimulationEngine.PandemicEngine
             foreach (var pop in sim.SimStates[^1].PopIndex)
             {
                 //only simulate living people
-                if((pop.Key & (uint) StateOfLife.Dead) == 0)
-                    SimHelper.MergeDictionariesNoDuplicates(newPopIndex, IteratePip(pop.Key, pop.Value, sim.SimSettings));
+                //respect possible duplicates in dictionary
+                if((pop.Key & (uint)StateOfLife.Compare) != (uint)StateOfLife.Dead)
+                    SimHelper.MergeDictionaries(newPopIndex, IteratePip(pop.Key, pop.Value, sim.SimSettings));
                 else
-                    newPopIndex.Add(pop.Key, pop.Value);
+                    SimHelper.AddValueToDictionary(newPopIndex, pop.Key, pop.Value);
             }
+
+            newState.PopIndex = newPopIndex;
             sim?.SimStates.Add(newState);
         }
 
@@ -55,14 +58,37 @@ namespace SimulationEngine.PandemicEngine
                 isEndangeredAge = (pop & (uint)settings.EndangeredAgeGroup) > 0;
             
             //healthy
-            if ((pop & (uint) StateOfLife.Healthy) > 0)
+            if ((pop & (uint)StateOfLife.Compare) == (uint)StateOfLife.Healthy)
             {
-                var rateOfWorsening = isEndangeredAge ? settings.EndangeredAgeRateOfGettingWorse : settings.RateOfGettingWorse;
+                var rateOfInfection = isEndangeredAge ? settings.EndangeredAgeInfectionRate : settings.BaseInfectionRate;
+                
+                var newInfected = SimHelper.DecideCountWithDeviation(count, rateOfInfection, settings.ProbabilityDeviation);
+                
+                SimHelper.AddValueToDictionary(newPopIndex, (pop & ~(uint)StateOfLife.Compare) + (uint)settings.InfectionSeverity, newInfected);
+                SimHelper.AddValueToDictionary(newPopIndex, pop, count - newInfected);
+            }
+            //heavily infected
+            else if ((pop & (uint)StateOfLife.Compare) == (uint)StateOfLife.HeavilyInfected)
+            {
+                var rateOfDead = isEndangeredAge ? settings.EndangeredAgeDeathRate : settings.BaseDeathRate;
+                
+                var newDead = SimHelper.DecideCountWithDeviation(count, rateOfDead, settings.ProbabilityDeviation);
+                
+                SimHelper.AddValueToDictionary(newPopIndex, (pop & ~(uint)StateOfLife.Compare) + (uint)StateOfLife.Dead, newDead);
+                SimHelper.AddValueToDictionary(newPopIndex, pop, count - newDead);
             }
             //infected
             else
             {
-                var rateOfDead = isEndangeredAge ? settings.EndangeredAgeDeathRate : settings.BaseDeathRate;
+                var rateOfWorsening = isEndangeredAge ? settings.EndangeredAgeRateOfGettingWorse : settings.RateOfGettingWorse;
+                
+                var newWorse = SimHelper.DecideCountWithDeviation(count, rateOfWorsening, settings.ProbabilityDeviation);
+                var severity = (pop & (uint)StateOfLife.Compare) == (uint)StateOfLife.ImperceptiblyInfected ?
+                    StateOfLife.Infected : 
+                    StateOfLife.HeavilyInfected;
+
+                SimHelper.AddValueToDictionary(newPopIndex, (pop & ~(uint)StateOfLife.Compare) + (uint)severity, newWorse);
+                SimHelper.AddValueToDictionary(newPopIndex, pop, count - newWorse);
             }
 
             return newPopIndex;

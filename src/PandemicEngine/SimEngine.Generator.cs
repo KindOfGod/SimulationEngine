@@ -20,7 +20,7 @@ public static partial class SimEngine
         };
         
         //add health state attribute
-        basePopIndex = AddAttributeToAllByPercentage(basePopIndex, settings.InitialProportionOfInfected, (uint)settings.HealthIllnessSeverity);
+        basePopIndex = AddAttributeToAllByPercentage(basePopIndex, settings.InitialProportionOfInfected, (uint)settings.HealthIllnessSeverity, (uint)StateOfLife.Healthy);
 
         var popIndex = new Dictionary<uint, uint>();
         foreach (var (key, count) in basePopIndex)
@@ -37,7 +37,7 @@ public static partial class SimEngine
         return state;
     }
 
-    private static Dictionary<uint, uint> AddAttributeToAllByPercentage(Dictionary<uint, uint> popIndex, double percentage, uint attribute)
+    private static Dictionary<uint, uint> AddAttributeToAllByPercentage(Dictionary<uint, uint> popIndex, double percentage, uint attribute, uint alternative)
     {
         var resIndex = new Dictionary<uint, uint>();
 
@@ -48,7 +48,7 @@ public static partial class SimEngine
             if(newAttributeCount > 0)
                 resIndex.Add(pop | attribute, newAttributeCount);
             
-            resIndex.Add(pop, popCount - newAttributeCount);
+            resIndex.Add(pop | alternative, popCount - newAttributeCount);
         }
 
         return resIndex;

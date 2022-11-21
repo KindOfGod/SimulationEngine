@@ -11,9 +11,11 @@ namespace SimulationEngine.PandemicEngine.DataModel
         // General
         public int Scope { get; set; } = 100_000;
 
+        public double ProbabilityDeviation { get; set; } = 0.05;
+
         // Health Distribution
         public double InitialProportionOfInfected { get; set; } //evenly distributed between age groups
-        public StateOfLife HealthIllnessSeverity { get; set; } = StateOfLife.Ill; // can't be Healthy or Dead
+        public StateOfLife HealthIllnessSeverity { get; set; } = StateOfLife.Infected; // can't be Healthy or Dead
         
         // Age Distribution --> has to be 1 in total
         public double AgeProportionOfChildren { get; set; } = 0.15; 
@@ -31,7 +33,7 @@ namespace SimulationEngine.PandemicEngine.DataModel
         public Age? EndangeredAgeGroup { get; set; } = Age.Pensioner;
         
         //infection kind
-        public StateOfLife InfectionSeverity { get; set; } = StateOfLife.Ill;
+        public StateOfLife InfectionSeverity { get; set; } = StateOfLife.ImperceptiblyInfected;
         public double RateOfGettingWorse { get; set; } = 0.2; // can't be greater than 1
         public double EndangeredAgeRateOfGettingWorse  { get; set; } = 0.4; //can't be greater than 1
         
