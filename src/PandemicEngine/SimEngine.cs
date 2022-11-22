@@ -37,21 +37,25 @@ namespace SimulationEngine.PandemicEngine
                 //only simulate living people
                 //respect possible duplicates in dictionary
                 if(!AttributeHelper.CheckStateOfLive(pop.Key, StateOfLife.Dead))
-                    SimHelper.MergeDictionaries(newPopIndex, IteratePip(pop.Key, pop.Value, sim.SimSettings));
+                    SimHelper.MergeDictionaries(newPopIndex, IteratePip(pop.Key, pop.Value, sim));
                 else
                     SimHelper.AddValueToDictionary(newPopIndex, pop.Key, pop.Value);
             }
 
             newState.PopIndex = newPopIndex;
-            sim?.SimStates.Add(newState);
+            sim.SimStates.Add(newState);
+            
+            CalculateStateStats(sim);
         }
 
         /// <summary>
         /// Iterates a single Pop and returns Dictionary with resulting Pops
         /// </summary>
-        private static Dictionary<uint, uint> IteratePip(uint pop, uint count, SimSettings settings)
+        private static Dictionary<uint, uint> IteratePip(uint pop, uint count, Sim sim)
         {
             var newPopIndex = new Dictionary<uint, uint>();
+            var settings = sim.SimSettings;
+            var prevState = sim.SimStates[^1];
             
             var isEndangeredAge = false;
             if(settings.EndangeredAgeGroup != null)
@@ -61,6 +65,9 @@ namespace SimulationEngine.PandemicEngine
             if (AttributeHelper.CheckStateOfLive(pop, StateOfLife.Healthy))
             {
                 var rateOfInfection = isEndangeredAge ? settings.EndangeredAgeInfectionRate : settings.BaseInfectionRate;
+                
+                //calculate modifier based on infection count
+                rateOfInfection = rateOfInfection + settings.InfectionSpreadRate * rateOfInfection * ((double)prevState.UnknownTotalInfected / (settings.Scope - prevState.CntDead));
                 
                 var newInfected = SimHelper.DecideCountWithDeviation(count, rateOfInfection, settings.ProbabilityDeviation);
                 
@@ -92,6 +99,42 @@ namespace SimulationEngine.PandemicEngine
             }
 
             return newPopIndex;
+        }
+        
+        /// <summary>
+        /// Calculates Stats for last SimState
+        /// </summary>
+        private static void CalculateStateStats(Sim sim)
+        {
+            var prevState = sim.SimStates[^2];
+            var state = sim.SimStates[^1];
+            foreach (var (key, count) in state.PopIndex)
+            {
+                if (AttributeHelper.CheckStateOfLive(key, StateOfLife.ImperceptiblyInfected))
+                    state.CntImperceptibleInfected += Convert.ToInt64(count);
+                else if (AttributeHelper.CheckStateOfLive(key, StateOfLife.Infected))
+                    state.CntInfected += Convert.ToInt64(count);
+                else if (AttributeHelper.CheckStateOfLive(key, StateOfLife.HeavilyInfected))
+                    state.CntHeavilyInfected += Convert.ToInt64(count);
+                else if (AttributeHelper.CheckStateOfLive(key, StateOfLife.Dead))
+                    state.CntDead += Convert.ToInt64(count);
+                else
+                    state.CntHealthy += Convert.ToInt64(count);
+
+                state.TotalInfected = state.CntInfected + state.CntHeavilyInfected;
+                state.UnknownTotalInfected = state.CntImperceptibleInfected + state.CntInfected + state.CntHeavilyInfected;
+
+                var rec = state.CntHealthy - prevState.CntHealthy;
+                state.Recovered = rec >= 0 ? rec : 0;
+
+                var unknownInc = prevState.CntHealthy - state.CntHealthy;
+                state.UnknownIncidence = unknownInc >= 0 ? unknownInc : 0;
+
+                var inc = prevState.CntHealthy + prevState.CntImperceptibleInfected - state.CntHealthy - prevState.CntImperceptibleInfected;
+                state.Incidence = inc >= 0 ? inc : 0;
+
+                state.DeathRate = state.CntDead - prevState.CntDead;
+            }
         }
     }
 }

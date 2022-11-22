@@ -23,15 +23,20 @@ namespace SimulationEngine
                 }
                 
                 //run iterations
-                for (var i = 0; i < 10; i++)
+                for (var i = 0; i < 100; i++)
                 {
                     using (ConsoleEx.WriteExecutionTime($"Iteration [{sim.SimStates.Count}]"))
                     {
                         SimEngine.IterateSimulation(sim);
+                        Console.WriteLine("Healthy: " + sim.SimStates[^1].CntHealthy);
+                        Console.WriteLine("Infected: " + sim.SimStates[^1].UnknownTotalInfected);
+                        Console.WriteLine("Incidence: " + sim.SimStates[^1].UnknownIncidence);
+                        Console.WriteLine("Dead: " + sim.SimStates[^1].CntDead);
                     }
                 }
-                
             }
+
+            Console.ReadKey();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace SimulationEngine.PandemicEngine.DataModel
 
         //infection rates
         public double BaseInfectionRate { get; set; } = 0.001; // can't be greater than 1
-        public double EndangeredAgeInfectionRate  { get; set; } = 0.005; //can't be greater than 1
+        public double EndangeredAgeInfectionRate  { get; set; } = 0.0005; //can't be greater than 1
         public Age? EndangeredAgeGroup { get; set; } = Age.Pensioner;
         
         //infection kind
@@ -40,6 +40,9 @@ namespace SimulationEngine.PandemicEngine.DataModel
         //rate of death
         public double BaseDeathRate { get; set; } = 0.1; // can't be greater than 1
         public double EndangeredAgeDeathRate  { get; set; } = 0.2; //can't be greater than 1
+        
+        //multiplier of infection spread rate if everybody is infected
+        public double InfectionSpreadRate { get; set; } = 500; //0 -> no influence if more people infected, x > 0 -> x-times as infective
 
         #endregion
     }

@@ -27,7 +27,7 @@ namespace SimulationEngine
         public void Dispose()
         {
             _stopwatch.Stop();
-            Console.WriteLine($"{_message,-50} -->{_stopwatch.ElapsedMilliseconds,8}ms");
+            Console.WriteLine($"{_message,-50} -->{Math.Round(_stopwatch.Elapsed.TotalMilliseconds, 2).ToString("N2"),8}ms");
             _stopwatch = null;
         }
     }
